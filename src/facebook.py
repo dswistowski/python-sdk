@@ -170,8 +170,10 @@ class GraphAPI(object):
         post_data = None if post_args is None else urllib.urlencode(post_args)
         file = urllib.urlopen("https://graph.facebook.com/" + path + "?" +
                               urllib.urlencode(args), post_data)
+        
         try:
-            response = _parse_json(file.read())
+            data = file.read()
+            response = _parse_json(data)        
         finally:
             file.close()
         if response.get("error"):
