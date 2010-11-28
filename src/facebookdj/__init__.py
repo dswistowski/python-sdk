@@ -33,11 +33,15 @@ def require_login(next=None):
     def decorator(view):
         def newview(request, *args, **kwargs):
             next = newview.next
-            
+            if not next:
+                next = 'http://apps.facebook.com/%s/' % settings.FACEBOOK_APP_NAME
             try:
                 graph = request.graph                
             except:
                 raise ImproperlyConfigured('Make sure you have Facebook middleware installed')
+            
+            if not request.graph.uid:
+                return request.graph.redirect('https://graph.facebook.com/oauth/authorize?client_id=%s&redirect_uri=%s' % (settings.FACEBOOK_API_KEY, next))
             
             return view(request, *args, **kwargs)
         newview.next = next
